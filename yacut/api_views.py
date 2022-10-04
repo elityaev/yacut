@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 
 from flask import request, jsonify
 
-from settings import MAX_LEN_CUSTOM_ID
+from settings import MAX_LEN_CUSTOM_ID, PATTERN
 from . import app
 from .error_handlers import InvalidAPIUsage
 from .models import URL_map
@@ -23,11 +23,11 @@ def create_id():
             data.get('custom_id') != '' and
             data.get('custom_id') is not None):
         if (len(data['custom_id']) > MAX_LEN_CUSTOM_ID or
-                re.match('[a-zA-Z0-9]*$', data['custom_id']) is None):
+                re.match(PATTERN, data['custom_id']) is None):
             raise InvalidAPIUsage(
                 'Указано недопустимое имя для короткой ссылки',
             )
-        elif URL_map.shot_id_exists(data['custom_id']):
+        elif URL_map.short_id_exists(data['custom_id']):
             raise InvalidAPIUsage(f'Имя "{data["custom_id"]}" уже занято.')
         else:
             short = data['custom_id']
@@ -42,7 +42,7 @@ def create_id():
 
 @app.route('/api/id/<path:short_id>/', methods=['GET'])
 def get_url(short_id):
-    url_map = URL_map.shot_id_exists(short_id)
+    url_map = URL_map.short_id_exists(short_id)
     if url_map is None:
         raise InvalidAPIUsage('Указанный id не найден', HTTPStatus.NOT_FOUND)
     return jsonify({'url': url_map.original}), HTTPStatus.OK

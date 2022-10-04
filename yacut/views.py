@@ -14,7 +14,7 @@ def index_view():
     if form.validate_on_submit() and form.data is not None:
         if form.custom_id.data:
             short = form.custom_id.data
-            if URL_map.shot_id_exists(short):
+            if URL_map.short_id_exists(short):
                 flash(f'Имя {short} уже занято!', 'used name')
                 return render_template('index.html', form=form)
         else:
@@ -26,6 +26,6 @@ def index_view():
 
 @app.route('/<string:id>')
 def redirection_view(id):
-    url_map = URL_map.shot_id_exists_or_404(id)
+    url_map = URL_map.short_id_exists_or_404(id)
     original = url_map.original
     return redirect(original)

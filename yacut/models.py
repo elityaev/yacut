@@ -2,14 +2,14 @@ import random
 import string
 from datetime import datetime
 
-from settings import LEN_SHORT_ID
+from settings import MAX_LEN_CUSTOM_ID, LEN_SHORT_ID
 from yacut import db
 
 
 class URL_map(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     original = db.Column(db.Text, nullable=False)
-    short = db.Column(db.String(16), unique=True)
+    short = db.Column(db.String(MAX_LEN_CUSTOM_ID), unique=True, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
 
     def to_dict(self):
@@ -41,9 +41,9 @@ class URL_map(db.Model):
         return url_map
 
     @staticmethod
-    def shot_id_exists(value):
+    def short_id_exists(value):
         return URL_map.query.filter_by(short=value).first()
 
     @staticmethod
-    def shot_id_exists_or_404(value):
+    def short_id_exists_or_404(value):
         return URL_map.query.filter_by(short=value).first_or_404()
